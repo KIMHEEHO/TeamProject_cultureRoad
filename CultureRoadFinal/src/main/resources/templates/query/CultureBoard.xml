@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.culture.user.board.dao.CultureBoardDAO">
+
+<sql id="cultureBoardSearch">
+		<if test="search=='ctBoTitle'">
+			<![CDATA[ ct_bo_title like '%'||#{keyword}||'%']]>
+		</if>
+		<if test="search=='ctBoContent'">
+			<![CDATA[ ct_bo_content like '%'||#{keyword}||'%']]>
+		</if>
+	</sql>
+
+	<select id="cultureBoardList" resultType="cultureBoard" parameterType="cultureBoard">
+			<![CDATA[
+			  SELECT boardlist.ct_bo_num as ctBoNum, boardlist.ct_bo_title as ctBoTitle, boardlist.ct_bo_content as ctBoContent, 
+			         TO_CHAR(boardlist.ct_bo_write_date,'MM-DD HH24:MI') AS ctBoWriteDate, 
+			         boardlist.ct_bo_readcnt as ctBoReadcnt, boardlist.ct_bo_hidden as ctBoHidden, boardlist.user_name as userName,
+			         (select count(ct_re_num) from CultureReply where ct_bo_num = boardlist.ct_bo_num) as ctBoReplycnt
+			  FROM (
+			    SELECT ROWNUM AS rnum, inner_list.*
+			    FROM (
+			      SELECT /*+ index_desc(cultureboard cultureboard_pk) */ 
+			        C.ct_bo_num, C.ct_bo_title, C.ct_bo_content, 
+			        C.ct_bo_write_date, C.ct_bo_readcnt, C.ct_bo_hidden, u.user_name
+			      FROM CULTUREBOARD C INNER JOIN USERS u 
+			      ON C.user_no = u.user_no
+			]]>
+			<trim prefix="WHERE " suffixOverrides="AND OR">
+			  <include refid="cultureBoardSearch"></include>
+			</trim>
+			<![CDATA[
+			      ORDER BY c.ct_bo_num DESC  -- 내부 쿼리에서 역정렬을 먼저 수행
+			    ) inner_list
+			    WHERE ROWNUM <= #{pageNum} * #{amount}
+			  ) boardlist
+			  WHERE boardlist.rnum > (#{pageNum} - 1) * #{amount} 
+			]]>
+	</select>
+	
+<!-- 	<select id="cultureReplyCnt" parameterType="cultureBoard"> -->
+<!-- 		select count(ct_re_num) as ct_bo_replycnt from culturereply where  ct_bo_num=#{ct_bo_num} -->
+<!-- 	</select> -->
+	
+	<select id="cultureBoardtotal" parameterType="cultureBoard" resultType="int">
+		select count(*) from CULTUREBOARD
+		    <trim prefix=" where (" suffix=")">
+				<include refid="cultureBoardSearch"></include>
+			</trim>
+	</select>
+	
+	
+	<select id="cultureBoardDetail" resultType="cultureBoard" parameterType="int">
+		select ct_bo_num ctBoNum, ct_bo_title ctBoTitle, ct_bo_content ctBoContent, to_char(ct_bo_write_date,'YYYY-MM-DD HH24:MI')as ctBoWriteDate, ct_bo_readcnt ctBoReadcnt,
+				  ct_bo_hidden ctBoHidden, u.user_name userName, m.user_no userNo
+		from CULTUREBOARD m INNER JOIN USERS U 
+		ON M.user_no = U.user_no 
+		where ct_bo_num=#{ctBoNum}
+	</select>
+	
+	<select id="cultureBoardReadCntUpdate" parameterType="cultureBoard">
+		update CULTUREBOARD 
+		set ct_bo_readcnt = ct_bo_readcnt +1 
+		where ct_bo_num = #{ctBoNum}
+	</select>
+		
+	<insert id="cultureBoardInsert" parameterType="cultureBoard">
+		insert into CULTUREBOARD(ct_bo_num, ct_bo_title, ct_bo_content, user_no)
+		values(cultureboard_seq.nextval, #{ctBoTitle}, #{ctBoContent}, #{userNo})
+	</insert>
+	
+	<delete id="cultureBoardDelete" parameterType="cultureBoard">
+		delete from CULTUREBOARD where ct_bo_num = #{ctBoNum}
+	</delete>
+	
+	<update id="cultureBoardUpdate" parameterType="cultureBoard">
+		update CULTUREBOARD 
+		set 
+			ct_bo_title = #{ctBoTitle},
+			ct_bo_content = #{ctBoContent},
+			ct_bo_write_date = sysdate
+		where ct_bo_num = ${ctBoNum}
+	</update>
+	
+	<update id="cultureHidden" parameterType="cultureBoard">
+		update CULTUREBOARD 
+		set ct_bo_hidden = #{ctBoHidden} 
+		where ct_bo_num = ${ctBoNum}
+	</update>
+	
+</mapper>

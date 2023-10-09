@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.culture.admin.login.dao.AdminLoginDAO">
+
+	<select resultType="adminLogin" parameterType="adminLogin" id="adminLogin">
+		SELECT manager_no managerNo, manager_id managerId, manager_pw managerPw, 
+		manager_email managerEmail,manager_date managerDate
+		FROM MANAGER
+		WHERE manager_id = #{managerId} and manager_pw = #{managerPw} 
+	</select>
+
+	<select id="userCount" resultType="int" >
+		select count(*) from users 
+	</select>
+	
+	<select id="replyCount" resultType="int" >
+		select (select count(*) from MOVIEREPLY) + (select count(*) from CULTUREREPLY) as replyCount  from dual
+	</select>
+	
+	<select id="commentCount" resultType="int" >
+		select count(*) from MOVIECOMMENT 
+	</select>
+	
+	<select id="boardCount" resultType="int" >
+		select (select count(*) from MOVIEBOARD) + (select count(*) from CULTUREBOARD) as boardCount from dual
+	</select>
+	
+
+
+</mapper>

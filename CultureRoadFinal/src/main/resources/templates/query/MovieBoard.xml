@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.culture.user.board.dao.MovieBoardDAO">
+	<sql id="movieBoardSearch">
+		<if test="search=='mv_bo_title'">
+			<![CDATA[ mv_bo_title like '%'||#{keyword}||'%']]>
+		</if>
+		<if test="search=='mv_bo_content'">
+			<![CDATA[ mv_bo_content like '%'||#{keyword}||'%']]>
+		</if>
+	</sql>
+
+	<select id="movieBoardList" resultType="movieBoard" parameterType="movieBoard">
+			<![CDATA[
+			  SELECT boardlist.mv_bo_num, boardlist.mv_bo_title, boardlist.mv_bo_content, 
+			         TO_CHAR(boardlist.mv_bo_write_date,'MM-DD HH24:MI') AS mv_bo_write_date, 
+			         boardlist.mv_bo_readcnt, boardlist.mv_bo_hidden, boardlist.user_name,
+			         (select count(mv_re_num) from movieReply where mv_bo_num = boardlist.mv_bo_num) as mv_bo_replycnt
+			  FROM (
+			    SELECT ROWNUM AS rnum, inner_list.*
+			    FROM (
+			      SELECT /*+ index_desc(movieboard movieboard_pk) */ 
+			        m.mv_bo_num, m.mv_bo_title, m.mv_bo_content, 
+			        m.mv_bo_write_date, m.mv_bo_readcnt, m.mv_bo_hidden, u.user_name
+			      FROM movieboard m
+			      JOIN USERS u ON m.user_no = u.user_no
+			]]>
+			<trim prefix="WHERE " suffixOverrides="AND OR">
+			  <include refid="movieBoardSearch"></include>
+			</trim>
+			<![CDATA[
+			      ORDER BY m.mv_bo_num DESC  -- 내부 쿼리에서 역정렬을 먼저 수행
+			    ) inner_list
+			    WHERE ROWNUM <= #{pageNum} * #{amount}
+			  ) boardlist
+			  WHERE boardlist.rnum > (#{pageNum} - 1) * #{amount} 
+			]]>
+	</select>
+	
+<!-- 	<select id="movieReplyCnt" parameterType="movieBoard"> -->
+<!-- 		select count(mv_re_num) as mv_bo_replycnt from moviereply where  mv_bo_num=#{mv_bo_num} -->
+<!-- 	</select> -->
+	
+	<select id="movieBoardtotal" parameterType="movieBoard" resultType="int">
+		select count(*) from MOVIEBOARD
+		    <trim prefix=" where (" suffix=")">
+				<include refid="movieBoardSearch"></include>
+			</trim>
+	</select>
+	
+	
+	<select id="movieBoardDetail" resultType="movieBoard" parameterType="int">
+		select mv_bo_num, mv_bo_title, mv_bo_content, to_char(mv_bo_write_date,'YYYY-MM-DD HH24:MI')as mv_bo_write_date, mv_bo_readcnt,
+				  mv_bo_hidden, u.user_name, m.user_no
+		from MOVIEBOARD m INNER JOIN USERS U 
+		ON M.user_no = U.user_no 
+		where mv_bo_num=#{mv_bo_num}
+	</select>
+	
+	<select id="movieBoardReadCntUpdate" parameterType="movieBoard">
+		update MOVIEBOARD set mv_bo_readcnt = mv_bo_readcnt +1 where mv_bo_num = #{mv_bo_num}
+	</select>
+		
+	<insert id="movieBoardInsert" parameterType="movieBoard">
+		insert into MOVIEBOARD(mv_bo_num, mv_bo_title, mv_bo_content, user_no)
+		values(movieboard_seq.nextval, #{mv_bo_title}, #{mv_bo_content}, #{user_no})
+	</insert>
+	
+	<delete id="movieBoardDelete" parameterType="movieBoard">
+		delete from MOVIEBOARD where mv_bo_num = #{mv_bo_num}
+	</delete>
+	
+	<update id="movieBoardUpdate" parameterType="movieBoard">
+		update MOVIEBOARD 
+		set 
+			mv_bo_title = #{mv_bo_title},
+			mv_bo_content = #{mv_bo_content},
+			mv_bo_write_date = sysdate
+		where mv_bo_num = ${mv_bo_num}
+	</update>
+	
+	<update id="movieHidden" parameterType="movieBoard">
+		update MOVIEBOARD 
+		set mv_bo_hidden = #{mv_bo_hidden} 
+		where mv_bo_num = ${mv_bo_num}
+	</update>
+	
+	
+</mapper>

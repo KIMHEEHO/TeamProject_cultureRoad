@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "naver-cloud-sms.accessKey",
+    "type": "java.lang.String",
+    "description": "A description for 'naver-cloud-sms.accessKey'"
+  },
+  {
+    "name": "naver-cloud-sms.secretKey",
+    "type": "java.lang.String",
+    "description": "A description for 'naver-cloud-sms.secretKey'"
+  },
+  {
+    "name": "naver-cloud-sms.serviceId",
+    "type": "java.lang.String",
+    "description": "A description for 'naver-cloud-sms.serviceId'"
+  },
+  {
+    "name": "naver-cloud-sms.senderPhone",
+    "type": "java.lang.String",
+    "description": "A description for 'naver-cloud-sms.senderPhone'"
+  }
+]}

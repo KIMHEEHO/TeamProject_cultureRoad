@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.culture.user.comment.dao.CommentDAO">
+
+   <!-- 쿼리문 참조!! private int mv_co_num = 0; //한줄평 번호 private int mv_id = 0; 
+      //영화 아이디(코드) private String mv_co_content = ""; // 댓글 내용 private String mv_co_write_date 
+      = ""; // 댓글 작성일 private int mv_co_ratings = 0; // 댓글 점수 private int mv_co_hidden 
+      = 0; // 댓글 숨김 private int mv_co_red = 0; // 댓글 신고 private int user_no = 0; 
+      // 사용자 번호 private String userName = ""; // 사용자명 } <collection property="images" 
+      column="m_num" ofType="image" javaType="java.util.ArrayList" select="com.spring.client.multiple.dao.ImageDao.imageList"></collection> 
+      오늘 이거 참조해서 댓글 기능 구현해보기 -->
+
+
+
+   <!-- 댓글 전체 조회(해당 영화아이디에 대해) -->
+<select id="commentList" parameterType="userComment" resultType="userComment">
+    SELECT mv_co_num AS mvCoNum, id, user_name AS userName, title, mv_co_content AS mvCoContent,
+        TO_CHAR(mv_co_write_date, 'YYYY-MM-DD') AS mvCoWriteDate, 
+        (SELECT COUNT(*) FROM likes WHERE mv_co_num = m.mv_co_num) as likeCount
+    FROM MOVIECOMMENT m
+    WHERE id = #{id}
+    ORDER BY mv_co_num DESC
+</select>
+
+<select id="bestComment" resultType="userComment">
+ <![CDATA[
+SELECT mv_co_num AS mvCoNum, id, user_name AS userName, title, mv_co_content AS mvCoContent, poster_path,
+    TO_CHAR(mv_co_write_date, 'YYYY-MM-DD') AS mvCoWriteDate, 
+    likeCount
+FROM (
+    SELECT m.*, 
+        (SELECT COUNT(*) FROM likes WHERE mv_co_num = m.mv_co_num) as likeCount
+    FROM MOVIECOMMENT m
+    ORDER BY likeCount DESC
+) WHERE ROWNUM <= 5
+ ]]>
+</select>
+
+
+
+   <!-- 댓글 등록 -->
+   <insert id="commentInsert" parameterType="userComment">
+      <selectKey keyProperty="mvCoNum" resultType="int" order="BEFORE">
+         select MOVIECOMMENT_SEQ.nextval from dual
+      </selectKey>
+      INSERT INTO MOVIECOMMENT(mv_co_num, id, user_name, title, MV_CO_CONTENT, mv_co_write_date, user_no, poster_path)
+      VALUES (#{mvCoNum}, #{id}, #{userName}, #{title}, #{mvCoContent}, SYSDATE, #{userNo}, #{poster_path})
+   </insert>
+
+
+
+   <!-- 비밀번호 확인 -->
+
+   <!-- <select id="pwdConfirm" parameterType="reply" resultType="int"> -->
+
+   <!-- /* Reply - pwdConfirm */ -->
+
+   <!-- SELECT NVL(( -->
+
+   <!-- SELECT 1 FROM spring_reply -->
+
+   <!-- WHERE r_num = #{r_num} AND r_pwd = #{r_pwd} -->
+
+   <!-- ), 0) as state -->
+
+   <!-- </select> 이건 아직 어떻게 될지 몰라서 Keep -->
+
+
+
+   <!-- 댓글 수정 -->
+
+   <update id="commentUpdate" parameterType="userComment">
+      UPDATE MOVIECOMMENT
+      SET
+      mv_co_content = #{mvCoContent}
+      WHERE mv_co_num = #{mvCoNum}
+   </update>
+
+
+
+
+   <!-- 댓글 삭제 -->
+
+   <delete id="commentDelete" parameterType="userComment">
+      DELETE FROM
+      MOVIECOMMENT
+      WHERE mv_co_num = #{mvCoNum}
+   </delete>
+
+
+
+   <!-- 댓글 삭제 (게시글 번호로 댓글 전체 삭제 - 관리자 페이지) -->
+   <delete id="commentChoiceDelete" parameterType="userComment">
+
+      /* Reply -
+      commentDelete */
+
+      DELETE FROM MOVIECOMMENT
+
+      WHERE id = #{id}
+
+   </delete>
+
+
+
+   <!-- 댓글 개수 구하기 -->
+   <select id="commentCnt" parameterType="userComment" resultType="userComment">
+
+      select count(mv_co_content) as commentCnt from MOVIECOMMENT where id = #{id}
+
+   </select>
+
+
+</mapper> 

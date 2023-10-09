@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.culture.api.payment.dao.MvOrderDetailDAO">
+
+	<sql id="paymentSearch">
+	    <if test="search=='userName'">
+	        <![CDATA[ user_name LIKE '%'||#{keyword} || '%' ]]>
+	    </if>
+	 <if test="search=='mvPayStatus'">
+    <![CDATA[
+        (
+            (mv_pay_status = 1 AND #{keyword} = '결제완료') OR
+            (mv_pay_status = 2 AND #{keyword} = '결제취소')
+        )
+    ]]>
+</if>
+	</sql>
+
+	
+	<insert id="insertOrderDetail" parameterType="mvOrderDetail">
+    INSERT INTO MVORDERDETAIL(MV_ORDER_ID, MV_PAYMENT_ID, USER_NO, USER_NAME, MV_HEADCNT, MV_PRICE, SELECTED_DATE, MV_PAY_STATUS, mv_title)
+    VALUES(MVORDERDETAIL_SEQ.NEXTVAL, #{mvPaymentId}, #{userNo}, #{userName, jdbcType=VARCHAR}, #{mvHeadcnt}, #{mvPrice}, #{selectedDate}, #{mvPayStatus}, #{mvTitle})
+	</insert>
+
+ 	<select id="getBill" resultType="mvorderdetail">
+		select mv_order_id, mv_payment_id, user_no, mv_headcnt, mv_price, mv_order_date, selected_date, mv_title
+		from MVORDERDETAIL  
+		where user_no = #{userNo} and mv_payment_id = #{mvPaymentId} and mv_order_id = #{mvOrderId} 
+	</select> 
+	
+	
+<!-- 사용자 -->
+ 	<select id="getSelectedOrderDetails" resultType="mvorderdetail">
+		SELECT D.MV_ORDER_ID as mvOrderId, D.MV_PAYMENT_ID as mvPaymentId, D.USER_NO as userNo, D.MV_HEADCNT as mvHeadcnt, D.MV_PRICE mvPrice, 
+		D.SELECTED_DATE as selectedDate, P.MV_PAY_STATUS as mvPayStatus, TO_CHAR(P.MV_ORDER_DATE, 'YYYY-MM-DD') AS mvOrderDate, D.mv_title as mvTitle
+		FROM MVORDERDETAIL D INNER JOIN MVPAYMENTS P 
+		ON D.MV_PAYMENT_ID = P.MV_PAYMENT_ID
+		WHERE D.USER_NO = #{userNo}
+		ORDER BY D.MV_ORDER_ID DESC
+	</select>
+
+<!-- 관리자 결제정보 조회 
+	<select id="getAllOrderDetails" resultType="mvorderdetail">
+		SELECT D.MV_ORDER_ID AS mvOrderId, D.MV_PAYMENT_ID AS mvPaymentId, D.USER_NO AS userNo,D.MV_HEADCNT AS mvHeadcnt, D.MV_PRICE AS mvPrice, 
+		D.selected_Date AS selectedDate, P.MV_PAY_STATUS AS mvPayStatus, TO_CHAR(P.MV_ORDER_DATE, 'YYYY"년" MM"월" DD"일"') AS mvOrderDate
+		FROM MVORDERDETAIL D INNER JOIN MVPAYMENTS P
+		ON D.MV_PAYMENT_ID = P.MV_PAYMENT_ID
+		WHERE D.USER_NO = #{userNo}
+		ORDER BY D.MV_ORDER_DATE 
+	</select>
+-->	
+	<!-- 관리자 결제정보 조회 -->
+	<select id="getAllOrderDetails" parameterType="mvorderdetail" resultType="mvorderdetail">
+	    <![CDATA[
+	    select mv_order_id mvOrderId, mv_payment_id mvPaymentId, user_no userNo, user_name userName, mv_headcnt as mvHeadCnt, mv_price mvPrice,
+	    selected_date selectedDate, mv_pay_status mvPayStatus, to_char(mv_order_date, 'YYYY-MM-DD') as mvOrderDate, MV_TITLE mvTitle
+		    from (
+		        select /*+ index_desc(MVORDERDETAIL mvorderdetail_pk)*/
+		        rownum as rnum, D.MV_ORDER_ID, D.MV_PAYMENT_ID, D.USER_NO, D.USER_NAME, D.MV_HEADCNT, D.MV_PRICE, 
+		        D.selected_Date, D.MV_PAY_STATUS , P.MV_ORDER_DATE , P.MV_TITLE
+		        FROM MVORDERDETAIL D INNER JOIN MVPAYMENTS P
+		        ON D.MV_PAYMENT_ID = P.MV_PAYMENT_ID
+		        where
+		    ]]>
+		    <trim prefix="(" suffix=") and " prefixOverrides="and">
+		        <include refid="paymentSearch"></include>
+		    </trim>
+		    <![CDATA[ rownum <= #{pageNum}*#{amount} 
+		    ) mvorderdetail  
+	    where rnum > (#{pageNum} - 1) * #{amount} 
+	    ORDER BY MV_ORDER_ID DESC
+	    ]]>
+	</select>
+	
+	<update id="payStatusUpdate" parameterType="mvorderdetail">
+		UPDATE MVORDERDETAIL
+		SET mv_pay_status = 2
+		WHERE mv_payment_id = #{mvPaymentId}	
+	</update>
+
+	<!-- 전체 레코드 수 조회 -->
+	<select id="getAllOrderDetailsCnt" parameterType="mvorderdetail" resultType="int">
+		select count(*) from MVORDERDETAIL
+		<trim prefix=" where (" suffix=")">
+			<include refid="paymentSearch"></include>
+		</trim>
+	</select>
+ 
+</mapper>
+

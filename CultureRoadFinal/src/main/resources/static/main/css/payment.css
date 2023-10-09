@@ -1,0 +1,247 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@200;400;600;800&display=swap');
+
+.container-wrap {
+  color:#333;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.container-wrap.bg01 {
+  background: #e8cbc0; /* fallback for old browsers */
+  background: -webkit-radial-gradient(circle, #e8cbc0  0%, #b1b8db); /* Chrome 10-25, Safari 5.1-6 */
+  background: radial-gradient(circle, #e8cbc0 0%, #b1b8db); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.container-wrap.bg02 {
+  background-color: #ebebeb;
+}
+
+@keyframes moveBackground {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 0%;
+  }
+}
+
+.container-wrap.bg03 {
+  background: linear-gradient(90deg, #e8cbc0, rgb(91, 142, 181));
+  background-size: 200% 100%;
+  animation: moveBackground 5s linear infinite;
+}
+
+.container-wrap.bg04 {
+  background: linear-gradient(90deg, rgb(190, 134, 1), #e8cbc0);
+  background-size: 200% 100%;
+  animation: moveBackground 5s linear infinite;
+}
+
+.container {
+  padding: 4rem;
+}
+
+.top-area {
+  width: 370px;
+  margin: 20px auto;
+}
+
+.top-area svg {
+  box-shadow: 2px 2px 3px rgb(75 47 83 / 50%);
+}
+
+.top-area p {
+  font-size: 24px;
+  color:#fff;
+  text-shadow: 2px 2px 3px #4b2f53;
+}
+
+.container-wrap.bg02 .top-area svg {
+  box-shadow: none;
+}
+
+.container-wrap.bg02 .top-area p {
+  color:#333;
+  text-shadow: 2px 2px 3px #f8f8f8;
+}
+
+.top-area i + span {
+  margin-left: 4px;
+}
+
+.container-wrap .card {
+  width: 370px;
+  margin: 10px auto;
+  border-style: none;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+  
+}
+
+.container-wrap.bg02 .card {
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+.card::before, .card::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 24px;
+}
+
+.card::before {
+  top: -17px;
+  background: url(/resources/main/image/upLine.png) repeat-x;
+}
+
+.card::after {
+  bottom: -17px;
+  background: url(/resources/main/image/downLine.png) repeat-x;
+}
+
+.card .info {
+  font-size: 12px;
+}
+
+.card .bold {
+  font-weight: 600;
+}
+
+.card-header {
+  padding: 40px 10px 20px;
+  text-align: center;
+  border: none;
+  background-color: #fff;
+  z-index: 1;
+}
+
+.card-header .title {
+  position: relative;
+  margin: 0 auto;
+  padding: 6px 50px;
+  display: inline-block;
+  font-size: 20px;
+  font-weight: 600;
+  border: 1px double #444; 
+}
+
+.card-header .title::after {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: -5px;
+  right: -3px;
+  bottom: -3px;
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  border: 2px double #444; 
+}
+
+.card-header .poster {
+  margin: 20px auto 15px;
+  max-width: 110px;
+  max-height: 158px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.card-header .poster img {
+  vertical-align: top;
+  max-width: 100%;
+}
+
+.card-header .text {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* 테이블 설정 */
+.card-body {
+  z-index: 1;
+}
+
+.card-body .table {  
+  font-size: 14px;
+}
+
+.card-body .table tr th {
+  font-weight: 600;
+}
+
+.card-body .table tr td {
+  text-align: right;
+}
+
+/* 테이블 보더 설정 */
+.card-body .table tbody, td, tfoot, th, thead, tr {
+  border-style: none;
+}
+
+.card-body .table tbody tr.line {
+  border-top: dotted #ccc 2px;
+}
+
+/* 바코드이미지 */
+.card-body .barCode {
+  display: block;
+  margin: 10px auto;
+  max-width: 80px;
+  max-height: 80px;
+}
+
+.card-body .barCode img {
+  vertical-align: top;
+  max-width: 100%;
+}
+
+.cancelled-payment {
+  color: red;
+  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.centered-image {
+  display: block;
+  margin: -40px auto 10px; 
+  max-width: 30%; 
+  height: auto; 
+}
+
+.rainfall {
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+        /* 버튼 스타일링 */
+        .modern-button {
+            width: 150px;
+            height: 40px;
+            background-color: #b1b8db;
+            color: white; /* 글자색 */
+            border: none;
+            border-radius: 5px; 
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+           .modern-button.hidden {
+            display: none; /* 버튼 숨김 */
+        }
+
+        .modern-button:hover {
+            background-color: #b1b8db; 
+            transform: scale(1.10); 
+        }
+        
+        .hide-on-screenshot {
+    display: none !important;
+}
+
+

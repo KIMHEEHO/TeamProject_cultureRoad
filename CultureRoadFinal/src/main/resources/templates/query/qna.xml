@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.culture.user.qna.dao.QnaDAO">
+	<sql id="qnaSearch">
+		<if test="search=='question'">
+         <![CDATA[ question like '%'||#{keyword}||'%']]>
+		</if>
+		<if test="search=='answer'">
+         <![CDATA[ answer like '%'||#{keyword}||'%']]>
+		</if>
+	</sql>
+
+	<!-- 게시판 리스트 조회(페이징 처리와 검색 처리) -->
+	<select id="qnaList" parameterType="userQnA" resultType="userQnA">
+		<![CDATA[
+			select qna_id,category,answer,TO_CHAR(answer_date, 'YYYY-MM-DD') AS answer_date, user_id,question,TO_CHAR(question_date, 'YYYY-MM-DD') AS  question_date 
+                from (
+                      select /*+ INDEX_DESC(qna qna_pk) */
+                          rownum as rnum,  q.category,q.qna_id,q.answer,q.answer_date, u.user_id,q.question,q.question_date
+                      from qna q
+                      INNER JOIN users u ON q.user_id = u.user_id 
+                      where]]>
+					<trim prefix="(" suffix=") and " prefixOverrides="and">
+						<include refid="qnaSearch"></include>
+					</trim>
+					<![CDATA[ rownum <= #{pageNum}*#{amount} 
+				)qna  
+                  where rnum > (#{pageNum} - 1) *#{amount} 
+                  ORDER BY qna_id DESC
+                  ]]>
+	</select>
+
+
+	<!-- 전체 레코드 수 조회 -->
+	<select id="qnaListCnt" parameterType="userQnA" resultType="int">
+		select count(*) from qna
+		<trim prefix=" where (" suffix=")">
+			<include refid="qnaSearch"></include>
+		</trim>
+	</select>
+
+
+	<insert id="insertQna" parameterType="userQnA">
+		<selectKey keyProperty="qna_id" resultType="int"
+			order="BEFORE">
+			select QNA_SEQ.nextval from dual
+		</selectKey>
+		insert into qna (qna_id, question, user_id,category)
+		values (
+		#{qna_id},
+		#{question},
+		(select user_id from users where user_id = #{user_id}),
+		#{category}
+		)
+	</insert>
+
+	<delete id="deleteQna" parameterType="userQnA">
+		delete from qna where qna_id = #{qna_id}
+	</delete>
+	
+	<!-- 문의 답변 입력 -->
+	<update id="updateAnswer" parameterType="userQnA">
+		UPDATE qna
+		SET answer = #{answer}, answer_date=sysdate
+		WHERE qna_id = #{qna_id}
+	</update>
+	
+	<!-- 질문 상세 조회 -->
+	<select id="getQnaById" parameterType="int" resultType="userQnA">
+		SELECT * FROM qna
+		WHERE qna_id = #{qna_Id}
+	</select>
+
+	<update id="updateQna" parameterType="userQnA">
+		UPDATE qna
+		SET question = #{question},question_date=sysdate
+		WHERE qna_id = #{qna_id}
+	</update>
+
+</mapper>

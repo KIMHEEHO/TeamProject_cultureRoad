@@ -1,0 +1,134 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>    
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<!DOCTYPE html>
+	<html lang="ko">
+	<head>
+		<meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	    <meta name="description" content="">
+	    <meta name="author" content="">
+	    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+	
+	    <title>문화빛길</title>
+<style>
+	.search {
+	    margin-left: auto;
+    	margin-right: auto;
+    	justify-content: center; 
+    	}
+</style>
+<!-- 	<style>
+		body {
+	margin: 0;
+	padding: 0;
+	background: #212741 !important;
+	   }
+	</style> -->
+	    <!-- Bootstrap core CSS -->
+	    <link href="/resources/main/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<!-- 	<style>
+#services {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    height: 100vh; /* 높이를 화면 높이로 설정하면 화면 중앙에 정렬됩니다. */
+}
+
+.calendardate{
+margin:auto;
+}
+</style> -->
+	
+	    <!-- Additional CSS Files -->
+	    <link rel="stylesheet" href="/resources/main/assets/css/fontawesome.css">
+	    <link rel="stylesheet" href="/resources/main/assets/css/templatemo-574-mexant.css">
+	    <link rel="stylesheet" href="/resources/main/assets/css/owl.css">
+	    <link rel="stylesheet" href="/resources/main/assets/css/animate.css">
+	    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css">
+		<link rel="stylesheet" type="text/css" href="/resources/main/vendor/bootstrap/css/bootstrap.min.css" />
+		<script type="text/javascript" src="/resources/main/js/jquery-3.7.0.min.js"></script>
+		<script type="text/javascript" src="/resources/main/js/common.js"></script>
+		<script type="text/javascript" src="/resources/main/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+		<!--[if lt IE 9]>
+			<script src="../js/html5shiv.js"></script>
+		<![endif]-->
+		
+		 <!-- Bootstrap core JavaScript -->
+    <script src="/resources/main/vendor/jquery/jquery.min.js"></script>
+    <script src="/resources/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script src="/resources/main/assets/js/isotope.min.js"></script>
+    <script src="/resources/main/assets/js/owl-carousel.js"></script>
+
+    <script src="/resources/main/assets/js/tabs.js"></script>
+    <script src="/resources/main/assets/js/swiper.js"></script>
+    <script src="/resources/main/assets/js/custom.js"></script>
+    
+
+  <!-- Scripts -->
+  <!-- Bootstrap core JavaScript -->
+    <script src="/resources/main/vendor/jquery/jquery.min.js"></script>
+    <script src="/resources/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script src="/resources/main/assets/js/isotope.min.js"></script>
+    <script src="/resources/main/assets/js/owl-carousel.js"></script>
+
+    <script src="/resources/main/assets/js/tabs.js"></script>
+    <script src="/resources/main/assets/js/swiper.js"></script>
+    <script src="/resources/main/assets/js/custom.js"></script>
+    <script>
+        var interleaveOffset = 0.5;
+
+      var swiperOptions = {
+        loop: true,
+        speed: 1000,
+        grabCursor: true,
+        watchSlidesProgress: true,
+        mousewheelControl: true,
+        keyboardControl: true,
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev"
+        },
+        on: {
+          progress: function() {
+            var swiper = this;
+            for (var i = 0; i < swiper.slides.length; i++) {
+              var slideProgress = swiper.slides[i].progress;
+              var innerOffset = swiper.width * interleaveOffset;
+              var innerTranslate = slideProgress * innerOffset;
+              swiper.slides[i].querySelector(".slide-inner").style.transform =
+                "translate3d(" + innerTranslate + "px, 0, 0)";
+            }      
+          },
+          touchStart: function() {
+            var swiper = this;
+            for (var i = 0; i < swiper.slides.length; i++) {
+              swiper.slides[i].style.transition = "";
+            }
+          },
+          setTransition: function(speed) {
+            var swiper = this;
+            for (var i = 0; i < swiper.slides.length; i++) {
+              swiper.slides[i].style.transition = speed + "ms";
+              swiper.slides[i].querySelector(".slide-inner").style.transition =
+                speed + "ms";
+            }
+          }
+        }
+      };
+
+      var swiper = new Swiper(".swiper-container", swiperOptions);
+    </script>
+    
+    <script src="/resources/main/js/modernizr-custom.js"></script>
+    <script src="/resources/main/js/ie-checker.js"></script>
+    <script src="/resources/main/assets/js/swiper.min.js"></script>
+    <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>

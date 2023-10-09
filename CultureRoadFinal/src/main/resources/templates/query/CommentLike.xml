@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.culture.user.commentLike.dao.CommentLikeDAO">
+
+    <insert id="insertLike">
+        INSERT INTO likes (like_number, mv_co_num, user_no)
+        VALUES (likes_SEQ.nextval, #{mvCoNum}, #{userNo})
+    </insert>
+
+    <delete id="deleteLike">
+        DELETE FROM likes WHERE user_no = #{userNo} AND mv_co_num = #{mvCoNum}
+    </delete>
+
+    <select id="getLikeStatus" resultType="int">
+        SELECT COUNT(*) FROM likes WHERE user_no = #{userNo} AND mv_co_num = #{mvCoNum}
+    </select>
+
+    <select id="getLikeCount" resultType="int">
+        SELECT COUNT(*) FROM likes WHERE mv_co_num = #{mvCoNum}
+    </select>
+    
+</mapper>

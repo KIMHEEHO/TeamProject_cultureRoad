@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.culture.user.board.dao.MovieReplyDAO">
+	<sql id="movieReplySearch">
+		<if test="search=='mv_re_content'">
+			<![CDATA[ mv_re_content like '%'||#{keyword}||'%']]>
+		</if>
+		<if test="search=='user_name'">
+			<![CDATA[ user_name like '%'||#{keyword}||'%']]>
+		</if>
+		<if test="search=='mv_bo_num'">
+			<![CDATA[ mv_bo_num = #{keyword}]]>
+		</if>
+	</sql>
+
+	<select id="movieReplyList" resultType="movieReply" parameterType="movieReply">
+		select mv_re_num, mv_re_content, TO_CHAR(mv_re_write_date,'MM-DD HH24:MI') AS mv_re_write_date,
+		mv_re_hidden,  r.user_no, mv_bo_num, u.user_name
+		from moviereply r inner join users u 
+		on r.user_no = u.user_no
+		where mv_bo_num = #{mv_bo_num}
+		order by mv_re_num
+	</select>
+
+	<insert id="movieReplyInsert" parameterType="movieReply">
+		insert into moviereply(mv_re_num, mv_re_content, user_no, mv_bo_num)
+		values(moviereply_seq.nextval, #{mv_re_content}, #{user_no},#{mv_bo_num})
+	</insert>
+
+	<update id="movieReplyDelete" parameterType="movieReply">
+		delete from moviereply
+		where mv_re_num = #{mv_re_num}
+	</update>
+
+	<update id="movieReplyUpdate" parameterType="movieReply">
+		update moviereply 
+		set
+			mv_re_content = #{mv_re_content},
+			mv_re_write_date = sysdate
+			where mv_re_num = #{mv_re_num}
+	</update>
+
+	<select id="movieReplyAllList" parameterType="movieReply" resultType="movieReply">
+	<![CDATA[
+		select replylist.mv_re_num, replylist.mv_re_content, TO_CHAR(mv_re_write_date,'MM-DD HH24:MI') AS mv_re_write_date,
+			replylist.mv_re_hidden,  replylist.mv_bo_num, replylist.user_name
+			 from (
+			 SELECT ROWNUM AS rnum, inner_list.*
+			   FROM (
+			   SELECT 
+				 r.mv_re_num, r.mv_re_content, 
+			        r.mv_re_write_date, r.mv_re_hidden, u.user_name, r.mv_bo_num
+			 from moviereply r inner join users u 
+			 on r.user_no = u.user_no
+	]]>
+		<trim prefix="WHERE " suffixOverrides="AND OR">
+			<include refid="movieReplySearch"></include>
+		</trim>
+			<![CDATA[
+			      ORDER BY r.mv_re_num DESC  
+			    ) inner_list
+			    WHERE ROWNUM <= #{pageNum} * #{amount}
+			   ) replylist
+			  WHERE replylist.rnum > (#{pageNum} - 1) * #{amount} 
+			]]>
+	</select>
+
+	<select id="movieReplyTotal" parameterType="movieReply" resultType="int" >
+		select count(*) 
+		from moviereply r inner join users u 
+		on r.user_no = u.user_no
+		<trim prefix=" where (" suffix=")">
+			<include refid="movieReplySearch"></include>
+		</trim>
+	</select>
+	
+	<update id="movieReplyHidden" parameterType="movieReply">
+		update moviereply 
+		set mv_re_hidden = #{mv_re_hidden} 
+		where mv_re_num = ${mv_re_num}
+	</update>
+
+</mapper>

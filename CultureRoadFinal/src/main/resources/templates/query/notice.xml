@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.culture.admin.notice.dao.NoticeDAO">
+	<sql id="noticeSearch">
+		<if test="search=='noc_title'">
+			<![CDATA[ noc_title like '%'||#{keyword}||'%']]>
+		</if>
+		<if test="search=='noc_content'">
+			<![CDATA[ noc_content like '%'||#{keyword}||'%']]>
+		</if>
+	</sql>
+
+	<select id="noticeList" resultType="adminNotice" parameterType="adminNotice">
+
+		<![CDATA[
+		select noc_num, noc_title, noc_content, to_char(noc_write_date,'MM-DD HH24:MI')as noc_write_date, readcnt 
+		    from(
+		        select /*+ index_desc(notice NOTICE_NOC_NUM_PK) */ 
+		            rownum as rnum, noc_num, noc_title, noc_content, noc_write_date, readcnt
+		        from notice where]]>
+		    <trim prefix="(" suffix=") and " prefixOverrides="and">
+				<include refid="noticeSearch"></include>
+			</trim>
+			<![CDATA[
+			rownum <=#{pageNum}*#{amount}
+				) boardlist
+			where rnum > (#{pageNum}-1)*#{amount}
+			]]>
+	</select>
+	
+	<select id="noticeCnt" parameterType="adminNotice" resultType="int">
+		select count(*) from notice
+		    <trim prefix=" where (" suffix=")">
+				<include refid="noticeSearch"></include>
+			</trim>
+	</select>
+	
+	<select id="noticeDetail" resultType="adminNotice" parameterType="int">
+		select noc_num, noc_title, noc_content, to_char(noc_write_date,'YYYY-MM-DD HH24:MI:SS')as noc_write_date, readcnt
+		from notice where noc_num=#{noc_num}
+	</select>
+	
+	<select id="readCntUpdate" parameterType="adminNotice">
+		update notice set readcnt = readcnt +1 where noc_num = #{noc_num}
+	</select>
+	                           
+	<delete id="noticeDelete" parameterType="adminNotice">
+		delete from notice where noc_num= #{noc_num}
+	</delete>
+	
+	<insert id="noticeInsert" parameterType="adminNotice">
+		insert into NOTICE(noc_num, noc_title, noc_content, manager_no)
+        values(NOTICE_seq.nextval,#{noc_title}, #{noc_content}, #{manager_no})
+	</insert>
+	<update id="noticeUpdate" parameterType="adminNotice">
+      update notice set noc_title = #{noc_title}, noc_content = #{noc_content} where noc_num=#{noc_num}
+   </update>
+	
+	
+</mapper>

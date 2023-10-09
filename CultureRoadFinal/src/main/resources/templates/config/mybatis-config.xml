@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<typeAliases>
+		<typeAlias type="com.culture.admin.login.vo.AdminLoginVO" alias="adminLogin"/>
+		<typeAlias type="com.culture.admin.notice.vo.NoticeVO" alias="adminNotice"/>
+		<typeAlias type="com.culture.admin.comment.vo.AdminCommentVO" alias="adminComment"/>
+		
+		
+		<typeAlias type="com.culture.user.login.vo.UserLoginVO" alias="userLogin"/>
+		<typeAlias type="com.culture.user.board.vo.MovieBoardVO" alias="movieBoard" />
+		<typeAlias type="com.culture.user.board.vo.MovieReplyVO" alias="movieReply" />
+		<typeAlias type="com.culture.user.board.vo.CultureBoardVO" alias="cultureBoard" />
+		<typeAlias type="com.culture.user.board.vo.CultureReplyVO" alias = "cultureReply" />
+		<typeAlias type="com.culture.user.qna.vo.UserQnaVO" alias="userQnA" /> 
+		
+		<typeAlias type="com.culture.api.payment.vo.PaymentVO" alias="payment"/>
+		<typeAlias type="com.culture.api.payment.vo.MvOrderDetailVO" alias="mvOrderDetail"/>
+		
+		<typeAlias type="com.culture.admin.comment.vo.AdminCommentVO" alias="adminComment"/>
+		<typeAlias type="com.culture.user.comment.vo.UserCommentVO" alias="userComment"/>
+		<typeAlias type="com.culture.user.commentLike.vo.CommentLikeVO" alias="commentLike"/>
+	</typeAliases>
+
+</configuration>

@@ -1,0 +1,5 @@
+@charset "UTF-8";
+
+/* 공통부분 */
+.required{color:red;}
+textarea{resize: none;}

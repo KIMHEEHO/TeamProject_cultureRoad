@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.culture.user.board.dao.CultureReplyDAO">
+<sql id="cultureReplySearch">
+		<if test="search=='ctReContent'">
+			<![CDATA[ ct_re_content like '%'||#{keyword}||'%']]>
+		</if>
+		<if test="search=='userName'">
+			<![CDATA[ user_name like '%'||#{keyword}||'%']]>
+		</if>
+		<if test="search=='ctBoNum'">
+			<![CDATA[ ct_bo_num = #{keyword}]]>
+		</if>
+	</sql>
+
+	<select id="cultureReplyList" resultType="cultureReply" parameterType="cultureReply">
+		select ct_re_num ctReNum, ct_re_content ctReContent, TO_CHAR(ct_re_write_date,'MM-DD HH24:MI') AS ctReWriteDate,
+		ct_re_hidden ctReHidden,  r.user_no userNo, r.ct_bo_num ctBoNum, u.user_name userName
+		from culturereply r inner join users u 
+		on r.user_no = u.user_no
+		where ct_bo_num = #{ctBoNum}
+		order by ct_re_num
+	</select>
+
+	<insert id="cultureReplyInsert" parameterType="cultureReply">
+		insert into culturereply(ct_re_num, ct_re_content, user_no, ct_bo_num)
+		values(culturereply_seq.nextval, #{ctReContent}, #{userNo},#{ctBoNum})
+	</insert>
+
+	<update id="cultureReplyDelete" parameterType="cultureReply">
+		delete from culturereply
+		where ct_re_num = #{ctReNum}
+	</update>
+
+	<update id="cultureReplyUpdate" parameterType="cultureReply">
+		update culturereply 
+		set
+			ct_re_content = #{ctReContent},
+			ct_re_write_date = sysdate
+			where ct_re_num = #{ctReNum}
+	</update>
+
+	<select id="cultureReplyAllList" parameterType="cultureReply" resultType="cultureReply">
+	<![CDATA[
+		select replylist.ct_re_num ctReNum, replylist.ct_re_content ctReContent, TO_CHAR(ct_re_write_date,'MM-DD HH24:MI') AS ctReWriteDate,
+			replylist.ct_re_hidden ctReHidden, replylist.ct_bo_num ctBoNum, replylist.user_name userName
+			 from (
+			 SELECT ROWNUM AS rnum, inner_list.*
+			   FROM (
+			   SELECT 
+				 r.ct_re_num, r.ct_re_content, 
+			        r.ct_re_write_date, r.ct_re_hidden, u.user_name, r.ct_bo_num
+			 from culturereply r inner join users u 
+			 on r.user_no = u.user_no
+	]]>
+		<trim prefix="WHERE " suffixOverrides="AND OR">
+			<include refid="cultureReplySearch"></include>
+		</trim>
+			<![CDATA[
+			      ORDER BY r.ct_re_num DESC  
+			    ) inner_list
+			    WHERE ROWNUM <= #{pageNum} * #{amount}
+			   ) replylist
+			  WHERE replylist.rnum > (#{pageNum} - 1) * #{amount} 
+			]]>
+	</select>
+
+	<select id="cultureReplyTotal" parameterType="cultureReply" resultType="int" >
+		select count(*) 
+		from culturereply r inner join users u 
+		on r.user_no = u.user_no
+		<trim prefix=" where (" suffix=")">
+			<include refid="cultureReplySearch"></include>
+		</trim>
+	</select>
+	
+	<update id="cultureReplyHidden" parameterType="cultureReply">
+		update culturereply 
+		set ct_re_hidden = #{ctReHidden} 
+		where ct_re_num = ${ctReNum}
+	</update>
+</mapper>
