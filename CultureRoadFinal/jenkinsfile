@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('github-clone') {
+            steps {
+                git branch: '', credentialsId:'joy', url : '{REPOSITORY URL}'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh "echo 'build'"
+            }
+
+        }
+    }
+}
