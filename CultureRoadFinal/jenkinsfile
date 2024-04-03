@@ -3,10 +3,22 @@ pipeline {
 
     stages {
 
-        stage('github-clone') {
-            steps {
-                git branch: '', credentialsId:'joy', url : '{REPOSITORY URL}'
-            }
+        // stage('github-clone') {
+        //     steps {
+        //         git branch: 'master', credentialsId:'joy', url : '{REPOSITORY URL}'
+        //     }
+        // }
+        
+        stage('Ready') {
+            sh "echo 'Ready'"
+        }
+    
+         stage('Build') {
+            sh "echo 'Build'"
+        }
+    
+        stage('Deploy') {
+            sh "echo 'Deploy'"
         }
     }
 }
